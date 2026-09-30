@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SecureCloud — Carga de archivos</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f4f7fb; color:#182230;
+}
+.card{
+  width:min(92%,520px); background:#fff; border:1px solid #e6ebf2;
+  border-radius:24px; padding:34px; box-shadow:0 18px 55px rgba(22,34,51,.10);
+}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.logo{width:42px;height:42px;border-radius:12px;background:#1769e0;color:white;display:grid;place-items:center;font-weight:800}
+.brand strong{font-size:18px}.brand span{display:block;color:#7b8797;font-size:12px;margin-top:2px}
+h1{font-size:25px;margin:0 0 8px}.sub{color:#6c7786;font-size:14px;margin:0 0 28px}
+.progress-wrap{height:11px;background:#edf1f6;border-radius:99px;overflow:hidden}
+.progress{height:100%;width:0;background:#1769e0;border-radius:99px;transition:width .25s linear}
+.row{display:flex;justify-content:space-between;margin-top:10px;font-size:13px;color:#667384}
+.files{margin-top:26px;border:1px solid #e8edf3;border-radius:16px;overflow:hidden}
+.file{display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid #eef1f5}
+.file:last-child{border:0}
+.icon{width:38px;height:38px;border-radius:10px;background:#eef5ff;color:#1769e0;display:grid;place-items:center;font-weight:700}
+.file b{font-size:13px}.file small{display:block;color:#8a95a3;margin-top:3px}
+.status{margin-left:auto;font-size:12px;color:#1769e0}
+.finish{display:none;text-align:center;padding:20px 0 4px}
+.finish .emoji{font-size:48px}.finish h2{font-size:30px;margin:12px 0 7px}.finish p{color:#717d8c;margin:0}
+.note{font-size:11px;color:#a0a8b3;text-align:center;margin-top:24px}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="brand">
+    <div class="logo">S</div>
+    <div><strong>SecureCloud</strong><span>File Transfer Service</span></div>
+  </div>
+
+  <section id="loading">
+    <h1>Subiendo archivos</h1>
+    <p class="sub">Estamos procesando tus archivos. No cierres esta ventana.</p>
+    <div class="progress-wrap"><div class="progress" id="bar"></div></div>
+    <div class="row"><span id="status">Preparando archivos...</span><b id="percent">0%</b></div>
+
+    <div class="files">
+      <div class="file">
+        <div class="icon">JPG</div>
+        <div><b>IMG_4821.jpg</b><small>4.8 MB</small></div>
+        <div class="status" id="s1">Pendiente</div>
+      </div>
+      <div class="file">
+        <div class="icon">JPG</div>
+        <div><b>IMG_4822.jpg</b><small>6.2 MB</small></div>
+        <div class="status" id="s2">Pendiente</div>
+      </div>
+      <div class="file">
+        <div class="icon">JPG</div>
+        <div><b>IMG_4823.jpg</b><small>3.9 MB</small></div>
+        <div class="status" id="s3">Pendiente</div>
+      </div>
+    </div>
+    <div class="note">Conexión segura · Cifrado activo</div>
+  </section>
+
+  <section class="finish" id="finish">
+    <div class="emoji">😂</div>
+    <h2>TE LA COMISTE COMPLETICA</h2>
+    <p>Tranqui... era una broma. No se subió ninguna foto.</p>
+  </section>
+</main>
+
+<script>
+const bar=document.getElementById('bar'), pct=document.getElementById('percent');
+const status=document.getElementById('status');
+const totalDuration=30000, startDelay=700, finishDelay=1200, startedAt=Date.now();
+const states=[
+ [8,"Conectando con el servidor..."],
+ [22,"Preparando archivos..."],
+ [39,"Subiendo IMG_4821.jpg..."],
+ [57,"Subiendo IMG_4822.jpg..."],
+ [74,"Subiendo IMG_4823.jpg..."],
+ [88,"Verificando archivos..."],
+ [97,"Finalizando transferencia..."],
+ [100,"Carga completada"]
+];
+let i=0;
+function tick(){
+  const [n,t]=states[i]; bar.style.width=n+'%'; pct.textContent=n+'%'; status.textContent=t;
+  if(n>=39) document.getElementById('s1').textContent='Subiendo...';
+  if(n>=57) document.getElementById('s1').textContent='Completado';
+  if(n>=57) document.getElementById('s2').textContent='Subiendo...';
+  if(n>=74) document.getElementById('s2').textContent='Completado';
+  if(n>=74) document.getElementById('s3').textContent='Subiendo...';
+  if(n>=97) document.getElementById('s3').textContent='Completado';
+  if(n===100){
+    setTimeout(()=>{document.getElementById('loading').style.display='none';document.getElementById('finish').style.display='block'},finishDelay);
+    return;
+  }
+  i++;
+  const nextAt=startedAt+startDelay+(totalDuration-finishDelay-startDelay)*i/(states.length-1);
+  setTimeout(tick,Math.max(0,nextAt-Date.now()));
+}
+setTimeout(tick,startDelay);
+</script>
+</body>
+</html>
